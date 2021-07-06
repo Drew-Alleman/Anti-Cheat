@@ -5,7 +5,14 @@
 
 std::vector<std::wstring> windowTitles;
 
-std::string to_string(const std::wstring& wstr);
+// Utils
+std::string toString(const std::wstring& wstr);
+
+//Enum Process Checks
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
 bool regexWindowSearch(std::regex pattern);
 bool isWindowPatternFound(std::regex pattern);
+
+// Debugging Checks
+bool isDebuggerPresent();
+bool isRemoteDebuggerPresent();
