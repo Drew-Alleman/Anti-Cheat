@@ -3,7 +3,10 @@
 #include <regex>
 #include <windows.h>
 #include <codecvt>
+<<<<<<< HEAD
 #include "json.hpp"
+=======
+>>>>>>> 6363390c9862bbd92b9a0e358fc1c636b8d88093
 
 std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)")};
 const int TITLE_SIZE = 1024;
