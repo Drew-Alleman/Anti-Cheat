@@ -3,13 +3,6 @@
 #include <regex>
 #include <windows.h>
 #include <codecvt>
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include "json.hpp"
-=======
->>>>>>> 6363390c9862bbd92b9a0e358fc1c636b8d88093
-=======
->>>>>>> parent of a1f1543 (Renamed to_string and added anti debugger functions)
 
 const int TITLE_SIZE = 1024;
 std::vector<std::wstring> windowTitles;
