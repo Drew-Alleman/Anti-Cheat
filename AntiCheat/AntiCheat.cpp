@@ -3,7 +3,6 @@
 #include <regex>
 #include <windows.h>
 #include <codecvt>
-#include <fstream> 
 
 const int TITLE_SIZE = 1024;
 std::vector<std::wstring> windowTitles;
