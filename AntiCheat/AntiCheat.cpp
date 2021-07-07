@@ -3,20 +3,19 @@
 #include <regex>
 #include <windows.h>
 #include <codecvt>
+#include "AntiCheat.h"
 
-std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)")};
+std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)") };
 const int TITLE_SIZE = 1024;
-std::vector<std::wstring> windowTitles;
 bool isCheating = false;
+std::vector<std::wstring> windowTitles;
 
 std::string toString(const std::wstring& wstr) {
-    /* Converts wstring to string */
     static std::wstring_convert< std::codecvt_utf8<wchar_t>, wchar_t > converter;
     return converter.to_bytes(wstr);
 }
 
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
-    /* CALLBACK Function for 'EnumWindows' */
+BOOL CALLBACK WindowSearch::EnumWindowsProc(HWND hWnd, LPARAM lParam) {
     WCHAR windowTitle[TITLE_SIZE];
     int textLength;
     GetWindowTextW(hWnd, windowTitle, TITLE_SIZE);
@@ -26,8 +25,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
     return TRUE;
 }
 
-bool regexWindowSearch(std::regex pattern) {
-    /* Applies regex pattern to windows title */
+bool WindowSearch::regexWindowSearch(std::regex pattern) {
     for (int i = 0; i < windowTitles.size(); ++i) {
         std::string windowTitle = toString(windowTitles[i]);
         if (std::regex_search(windowTitle, pattern)) 
@@ -36,11 +34,19 @@ bool regexWindowSearch(std::regex pattern) {
     return false;
 }
 
-bool isDebuggerPresent() {
+bool WindowSearch::isPatternFound(std::regex pattern) {
+    EnumWindows(WindowSearch::EnumWindowsProc, reinterpret_cast<LPARAM>(&windowTitles));
+    bool isWindowFound = WindowSearch::regexWindowSearch(pattern);
+    windowTitles.empty();
+    return isWindowFound;
+}
+
+
+bool Debugger::isDebuggerPresent() {
     return IsDebuggerPresent();
 }
 
-bool isRemoteDebuggerPresent() {
+bool Debugger::isRemoteDebuggerPresent() {
     PBOOL isDebugPresent = FALSE;
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
     if (hProcess != nullptr)
@@ -48,25 +54,18 @@ bool isRemoteDebuggerPresent() {
     return isDebugPresent;
 }
 
-bool isWindowPatternFound(std::regex pattern) {
-    EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&windowTitles));
-    bool isWindowFound = regexWindowSearch(pattern);
-    windowTitles.empty();
-    return isWindowFound;
+bool Debugger::Check() {
+    return Debugger::isRemoteDebuggerPresent() || Debugger::isDebuggerPresent();
 }
 
 int main() {
-    std::regex pattern(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)");
     while (!isCheating) {
-        if (isWindowPatternFound(pattern)) {
-            printf("Please close any hacking/cheating software!");
-            for (std::regex pattern : regexPatterns) {
-                if (isWindowPatternFound(pattern)) {
-                    printf("Please close any hacking/cheating software!\n");
-                    isCheating = true;
-                }
+        for (std::regex pattern : regexPatterns) {
+            if (WindowSearch::isPatternFound(pattern)) {
+                printf("Please close any hacking/cheating software!\n");
+                isCheating = true;
             }
-            if (isRemoteDebuggerPresent() || isDebuggerPresent()) {
+            if (Debugger::Check()) {
                 printf("Please detach the debugger!\n");
                 isCheating = true;
             }
