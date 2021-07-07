@@ -15,7 +15,7 @@ bool isWindowPatternFound(std::regex pattern);
 // Debugging Checks
 bool isDebuggerPresent();
 bool isRemoteDebuggerPresent();
-=======
+
 std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)") };
 const int TITLE_SIZE = 1024;
 bool isCheating = false;
