@@ -3,7 +3,6 @@
 #include <string>
 #include <regex>
 
-<<<<<<< HEAD
 // Utils
 std::string toString(const std::wstring& wstr);
 
@@ -48,4 +47,3 @@ namespace Debugger {
 	/* Calls isDebuggerPresent(), and isRemoteDebuggerPresent() and returns true if debugger is found */
 	bool Check();
 };
->>>>>>> 5fcd88fdafd7a5f8d5d1586503b32841d6d92c1a
