@@ -13,5 +13,8 @@ bool isWindowPatternFound(std::regex pattern);
 bool isWindowPatternFound(std::regex pattern);
 
 // Debugging Checks
-bool isDebuggerPresent();
-bool isRemoteDebuggerPresent();
+namespace Debugger {
+	bool isDebuggerPresent();
+	bool isRemoteDebuggerPresent();
+	bool Check();
+}

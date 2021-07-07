@@ -3,6 +3,8 @@
 #include <regex>
 #include <windows.h>
 #include <codecvt>
+#include "AntiCheat.h"
+
 
 std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)")};
 const int TITLE_SIZE = 1024;
@@ -36,16 +38,20 @@ bool regexWindowSearch(std::regex pattern) {
     return false;
 }
 
-bool isDebuggerPresent() {
+bool Debugger::isDebuggerPresent() {
     return IsDebuggerPresent();
 }
 
-bool isRemoteDebuggerPresent() {
+bool Debugger::isRemoteDebuggerPresent() {
     PBOOL isDebugPresent = FALSE;
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
     if (hProcess != nullptr)
         CheckRemoteDebuggerPresent(hProcess, isDebugPresent);
     return isDebugPresent;
+}
+
+bool Debugger::Check() {
+    return Debugger::isRemoteDebuggerPresent() || Debugger::isDebuggerPresent();
 }
 
 bool isWindowPatternFound(std::regex pattern) {
@@ -56,17 +62,13 @@ bool isWindowPatternFound(std::regex pattern) {
 }
 
 int main() {
-    std::regex pattern(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)");
     while (!isCheating) {
-        if (isWindowPatternFound(pattern)) {
-            printf("Please close any hacking/cheating software!");
-            for (std::regex pattern : regexPatterns) {
-                if (isWindowPatternFound(pattern)) {
-                    printf("Please close any hacking/cheating software!\n");
-                    isCheating = true;
-                }
+        for (std::regex pattern : regexPatterns) {
+            if (isWindowPatternFound(pattern)) {
+                printf("Please close any hacking/cheating software!\n");
+                isCheating = true;
             }
-            if (isRemoteDebuggerPresent() || isDebuggerPresent()) {
+            if (Debugger::Check()) {
                 printf("Please detach the debugger!\n");
                 isCheating = true;
             }
