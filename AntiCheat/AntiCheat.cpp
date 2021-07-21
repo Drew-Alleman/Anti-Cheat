@@ -40,6 +40,14 @@ bool WindowSearch::isPatternFound(std::regex pattern) {
     return isWindowFound;
 }
 
+bool WindowSearch::isPatternsFound(std::vector<std::regex> patterns) {
+    for (std::regex pattern : regexPatterns) {
+        if (WindowSearch::isPatternFound(pattern)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 bool Debugger::isDebuggerPresent() {
     return IsDebuggerPresent();
@@ -68,15 +76,13 @@ bool Debugger::Check() {
 
 int main() {
     while (!isCheating) {
-        for (std::regex pattern : regexPatterns) {
-            if (WindowSearch::isPatternFound(pattern)) {
-                printf("Please close any hacking/cheating software!\n");
-                isCheating = true;
-            }
-            if (Debugger::Check()) {
-                printf("Please detach the debugger!\n");
-                isCheating = true;
-            }
+        if (WindowSearch::isPatternsFound(regexPatterns)) {
+            printf("Please close any hacking/cheating software!\n");
+            isCheating = true;
+        }
+        if (Debugger::Check()) {
+            printf("Please detach the debugger!\n");
+            isCheating = true;
         }
     }
 }
