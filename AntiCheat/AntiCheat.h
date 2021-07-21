@@ -23,11 +23,11 @@ namespace WindowSearch {
 
 /* Debugging Checks */
 namespace Debugger {
-	/* Calls WINAPI isDebuggerPresent(); */
+	/* Calls isDebuggerPresent(); */
 	bool isDebuggerPresent();
-	/* Calls CheckRemoteDebuggerPresent() from WINAPI, can detect ring-3 debuggers. */
+	/* Can detect ring-3 debugger  */
 	bool isRemoteDebuggerPresent();
-	/* Uses ASM INT 0x3 to check for a debugger */
+	/* Uses ASM INT 0x3 to check for a debugger  */
 	bool isDebuggerPresentAsm();
 	/* Calls isDebuggerPresent(), isRemoteDebuggerPresent() and isDebuggerPresentAsm and returns true a if debugger is found */
 	bool Check();
