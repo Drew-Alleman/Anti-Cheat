@@ -5,12 +5,11 @@
 #include <codecvt>
 #include "AntiCheat.h"
 
-std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)") };
 const int TITLE_SIZE = 1024;
-bool isCheating = false;
 std::vector<std::wstring> windowTitles;
+bool isCheating = false;
 
-std::string toString(const std::wstring& wstr) {
+std::string Utilities::toString(const std::wstring& wstr) {
     static std::wstring_convert< std::codecvt_utf8<wchar_t>, wchar_t > converter;
     return converter.to_bytes(wstr);
 }
@@ -27,7 +26,7 @@ BOOL CALLBACK WindowSearch::EnumWindowsProc(HWND hWnd, LPARAM lParam) {
 
 bool WindowSearch::regexWindowSearch(std::regex pattern) {
     for (int i = 0; i < windowTitles.size(); ++i) {
-        std::string windowTitle = toString(windowTitles[i]);
+        std::string windowTitle = Utilities::toString(windowTitles[i]);
         if (std::regex_search(windowTitle, pattern)) 
             return true;
     }
@@ -54,8 +53,17 @@ bool Debugger::isRemoteDebuggerPresent() {
     return isDebugPresent;
 }
 
+bool Debugger::isDebuggerPresentAsm()
+{
+    __try {
+        __asm INT 0x03;
+        return true;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER) { return false; }
+}
+
 bool Debugger::Check() {
-    return Debugger::isRemoteDebuggerPresent() || Debugger::isDebuggerPresent();
+    return Debugger::isRemoteDebuggerPresent() || Debugger::isDebuggerPresent() || Debugger::isDebuggerPresentAsm();
 }
 
 int main() {
