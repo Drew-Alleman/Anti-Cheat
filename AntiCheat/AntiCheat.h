@@ -16,7 +16,7 @@ namespace WindowSearch {
 	returns true if the regex pattern matches a window title */
 	bool isPatternFound(std::regex pattern);
 	/* returns true if the regex pattern matches the window title
-	This function is called in isWindowPatternFound() */
+	This function is called in isPatternsFound() */
 	bool regexWindowSearch(std::regex pattern);
 	/* Takes a vector of regex's as a parameter and returns true if any of them are found */
 	bool isPatternsFound(std::vector<std::regex> patterns);
