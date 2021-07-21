@@ -3,23 +3,12 @@
 #include <string>
 #include <regex>
 
-// Utils
-std::string toString(const std::wstring& wstr);
-
-//Enum Process Checks
+/* Enum Process Checks */
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
-bool regexWindowSearch(std::regex pattern);
-bool isWindowPatternFound(std::regex pattern);
-bool isWindowPatternFound(std::regex pattern);
+/* Vector of regex patterns to match window titles. */ 
+std::vector<std::regex>  regexPatterns = { std::regex(R"(\bCheat Engine \b[0-9]([0-9])?.[0-9]([0-9])?)"), std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)") };
 
-// Debugging Checks
-bool isDebuggerPresent();
-bool isRemoteDebuggerPresent();
-
-/* Converts a wstring into a std::string */
-std::string toString(const std::wstring& wstr);
-
-// Regex pattern search for window titles
+/* Enum Opened Windows */
 namespace WindowSearch {
 	/* Callback function for EnumWindows(). Gathers all window names and stores them in vec windowTitles*/
 	BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
@@ -32,13 +21,19 @@ namespace WindowSearch {
 
 };
 
-
-// Debugging Checks
+/* Debugging Checks */
 namespace Debugger {
 	/* Calls isDebuggerPresent(); */
 	bool isDebuggerPresent();
 	/* Can detect ring-3 debugger  */
 	bool isRemoteDebuggerPresent();
-	/* Calls isDebuggerPresent(), and isRemoteDebuggerPresent() and returns true if debugger is found */
+	/* Uses ASM INT 0x3 to check for a debugger  */
+	bool isDebuggerPresentAsm();
+	/* Calls isDebuggerPresent(), isRemoteDebuggerPresent() and isDebuggerPresentAsm and returns true a if debugger is found */
 	bool Check();
 };
+
+namespace Utilities {
+	/* Converts a wstring to a standard string */
+	std::string toString(const std::wstring& wstr);
+}
