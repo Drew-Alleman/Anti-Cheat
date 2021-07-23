@@ -1,13 +1,21 @@
-#include <iostream>
-#include <string>
-#include <regex>
-#include <windows.h>
-#include <codecvt>
 #include "AntiCheat.h"
 
 const int TITLE_SIZE = 1024;
 std::vector<std::wstring> windowTitles;
-bool isCheating = false;
+
+bool isRunning = true;
+std::vector<std::regex>  regexPatterns = { 
+    /* Pattern for Cheat Engine https://regex101.com/r/olJ8Ns/1 */
+    std::regex(R"(\b^Cheat Engine \b[0-9]([0-9])?.([0-9]?).([0-9])?\b)"), 
+    /* Pattern for Extreme Injector https://regex101.com/r/bCabrN/1 */
+    std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)"),
+    /* Pattern for HxD https://regex101.com/r/1dlzan/1 */
+    std::regex(R"(\b^HxD\b)"),
+    /* Pattern for  dllinjector.com DLL injector https://regex101.com/r/HrIu9S/1 */
+    std::regex(R"(\b^DLL Injector v[0-9].[0-9] www.dllinjector.com\b)"),
+    /* Pattern for Process Explorer https://regex101.com/r/3x1aqa/1 NOT WORKING! ? */
+    //std::regex(R"(\b^Process Explorer - Sysinternals:www.sysinternals.com \[[A-Za-z0-9_-].*.]\b)"),
+};
 
 std::string Utilities::toString(const std::wstring& wstr) {
     static std::wstring_convert< std::codecvt_utf8<wchar_t>, wchar_t > converter;
@@ -41,7 +49,7 @@ bool WindowSearch::isPatternFound(std::regex pattern) {
 }
 
 bool WindowSearch::isPatternsFound(std::vector<std::regex> patterns) {
-    for (std::regex pattern : regexPatterns) {
+    for (std::regex pattern : patterns) {
         if (WindowSearch::isPatternFound(pattern)) {
             return true;
         }
@@ -55,7 +63,7 @@ bool Debugger::isDebuggerPresent() {
 
 bool Debugger::isRemoteDebuggerPresent() {
     PBOOL isDebugPresent = FALSE;
-    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
+    HANDLE hProcess = GetCurrentProcess();
     if (hProcess != nullptr)
         CheckRemoteDebuggerPresent(hProcess, isDebugPresent);
     return isDebugPresent;
@@ -69,20 +77,11 @@ bool Debugger::isDebuggerPresentAsm()
     }
     __except (EXCEPTION_EXECUTE_HANDLER) { return false; }
 }
-
+ 
 bool Debugger::Check() {
-    return Debugger::isRemoteDebuggerPresent() || Debugger::isDebuggerPresent() || Debugger::isDebuggerPresentAsm();
+    return Debugger::isRemoteDebuggerPresent() ||  Debugger::isDebuggerPresent() || Debugger::isDebuggerPresentAsm();
 }
 
-int main() {
-    while (!isCheating) {
-        if (WindowSearch::isPatternsFound(regexPatterns)) {
-            printf("Please close any hacking/cheating software!\n");
-            isCheating = true;
-        }
-        if (Debugger::Check()) {
-            printf("Please detach the debugger!\n");
-            isCheating = true;
-        }
-    }
+bool AntiCheat::Check(std::vector<std::regex> patterns) {
+    return WindowSearch::isPatternsFound(patterns) || Debugger::Check();
 }
