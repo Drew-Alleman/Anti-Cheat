@@ -3,12 +3,27 @@
 #include <regex>
 #include <vector>
 #include <windows.h>
+#include <thread>
 #include <codecvt>
 
 /* Enum Process Checks */
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
-/* Vector of regex patterns to match window titles. */ 
 
+/* Sample Vector of regex patterns to match window titles. */
+std::vector<std::regex> regexPatterns = {
+	/* Pattern for Cheat Engine https://regex101.com/r/olJ8Ns/1 */
+	std::regex(R"(\b^Cheat Engine \b[0-9]([0-9])?.([0-9]?).([0-9])?\b)"),
+	/* Pattern for Extreme Injector https://regex101.com/r/bCabrN/1 */
+	std::regex(R"(\b^Extreme Injector v[0-9]([0-9])?.[0-9]([0-9])?.[0-9]([0-9])?\b by master131\b)"),
+	/* Pattern for HxD https://regex101.com/r/1dlzan/1 */
+	std::regex(R"(\b^HxD\b)"),
+	/* Pattern for  dllinjector.com DLL injector https://regex101.com/r/HrIu9S/1 */
+	std::regex(R"(\b^DLL Injector v[0-9].[0-9] www.dllinjector.com\b)"),
+	/* Pattern for Process Explorer https://regex101.com/r/3x1aqa/1 NOT WORKING! ? */
+	//std::regex(R"(\b^Process Explorer - Sysinternals:www.sysinternals.com \[[A-Za-z0-9_-].*.]\b)"),
+};
+
+/* Set true if user is cheating */
 bool isCheating = false;
 
 /* Enumerate Opened Windows */
@@ -44,7 +59,6 @@ namespace Utilities {
 
 /* AntiCheat */
 namespace AntiCheat {
-	/* Takes a vector of regexs as an argument and Runs Debugger::Check() 
-	and isPatternsFound(). Returns true if either functions returns true */
-	bool Check(std::vector<std::regex> patterns);
-}
+	/*  Runs Debugger::Check() and isPatternsFound(). Called in AntiCheat::Run() */
+	bool Check(std::vector<std::regex>);
+};
